@@ -84,6 +84,13 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
             localizedLabels = arguments["iOSLocalizedLabels"] as! Bool
             self.result = result
             _ = openContactForm()
+         case "openContactForm":
+             let arguments = call.arguments as! [String:Any]
+             localizedLabels = arguments["iOSLocalizedLabels"] as! Bool
+             let displayName = arguments["displayName"] as! String
+             let phone = arguments["phone"] as! String
+             self.result = result
+             _ = openContactFormWithInitialValue(displayName:displayName,phone:phone)
          case "openExistingContact":
             let arguments = call.arguments as! [String : Any]
             let contact = arguments["contact"] as! [String : Any]
@@ -215,6 +222,21 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
     func openContactForm() -> [String:Any]? {
         let contact = CNMutableContact.init()
         let controller = CNContactViewController.init(forNewContact:contact)
+        controller.delegate = self
+        DispatchQueue.main.async {
+         let navigation = UINavigationController .init(rootViewController: controller)
+         let viewController : UIViewController? = UIApplication.shared.delegate?.window??.rootViewController
+            viewController?.present(navigation, animated:true, completion: nil)
+        }
+        return nil
+    }
+
+    func openContactFormWithInitialValue(displayName : String, phone: String) -> [String:Any]? {
+        let contact = CNMutableContact.init()
+        contact.givenName = displayName
+        contact.phoneNumbers.append(CNLabeledValue(
+            label: "mobile", value: CNPhoneNumber(stringValue: phone)))
+        let controller = CNContactViewController.init(forUnknownContact:contact)
         controller.delegate = self
         DispatchQueue.main.async {
          let navigation = UINavigationController .init(rootViewController: controller)

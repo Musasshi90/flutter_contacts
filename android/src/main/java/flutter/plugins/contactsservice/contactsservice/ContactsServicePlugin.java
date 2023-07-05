@@ -159,6 +159,18 @@ public class ContactsServicePlugin implements MethodCallHandler, FlutterPlugin, 
           result.success(FORM_COULD_NOT_BE_OPEN);
         }
         break;
+      }case "openContactFormWithInitialValue": {
+        final boolean localizedLabels = call.argument("androidLocalizedLabels");
+        final String phone = call.argument("phone");
+        final String displayName = call.argument("displayName");
+        if (delegate != null) {
+          delegate.setResult(result);
+          delegate.setLocalizedLabels(localizedLabels);
+          delegate.openContactFormWithInitialValue(displayName,phone);
+        } else {
+          result.success(FORM_COULD_NOT_BE_OPEN);
+        }
+        break;
       } case "openDeviceContactPicker": {
         final boolean localizedLabels = call.argument("androidLocalizedLabels");
         openDeviceContactPicker(result, localizedLabels);
@@ -295,8 +307,7 @@ public class ContactsServicePlugin implements MethodCallHandler, FlutterPlugin, 
         } else {
           Log.e(LOG_TAG, "onActivityResult - cursor.moveToFirst() returns false");
           finishWithResult(FORM_OPERATION_CANCELED);
-        }}else{return true;}
-        cursor.close();
+        }cursor.close();}else{return true;}
         return true;
       }
 
@@ -327,6 +338,18 @@ public class ContactsServicePlugin implements MethodCallHandler, FlutterPlugin, 
       try {
         Intent intent = new Intent(Intent.ACTION_INSERT, ContactsContract.Contacts.CONTENT_URI);
         intent.putExtra("finishActivityOnSaveCompleted", true);
+        startIntent(intent, REQUEST_OPEN_CONTACT_FORM);
+      }catch(Exception e) {
+      }
+    }
+
+
+    void openContactFormWithInitialValue(String displayName, String phone) {
+      try {
+        Intent intent = new Intent(Intent.ACTION_INSERT_OR_EDIT);
+        intent.setType(ContactsContract.Contacts.CONTENT_ITEM_TYPE);
+        intent.putExtra(ContactsContract.Intents.Insert.NAME, displayName);
+        intent.putExtra(ContactsContract.Intents.Insert.PHONE, phone);
         startIntent(intent, REQUEST_OPEN_CONTACT_FORM);
       }catch(Exception e) {
       }

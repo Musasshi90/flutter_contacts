@@ -108,6 +108,20 @@ class ContactsService {
     return _handleFormOperation(result);
   }
 
+  static Future<Contact> openContactFormWithInitialValue(
+      String displayName, String phone,
+      {bool iOSLocalizedLabels = true,
+      bool androidLocalizedLabels = true}) async {
+    dynamic result =
+        await _channel.invokeMethod('openContactFormWithInitialValue', <String, dynamic>{
+      'iOSLocalizedLabels': iOSLocalizedLabels,
+      'androidLocalizedLabels': androidLocalizedLabels,
+      'displayName': displayName,
+      'phone': phone,
+    });
+    return _handleFormOperation(result);
+  }
+
   static Future<Contact> openExistingContact(Contact contact,
       {bool iOSLocalizedLabels = true,
       bool androidLocalizedLabels = true}) async {
