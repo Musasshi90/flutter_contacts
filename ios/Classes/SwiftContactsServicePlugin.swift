@@ -84,7 +84,7 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
             localizedLabels = arguments["iOSLocalizedLabels"] as! Bool
             self.result = result
             _ = openContactForm()
-         case "openContactForm":
+         case "openContactFormWithInitialValue":
              let arguments = call.arguments as! [String:Any]
              localizedLabels = arguments["iOSLocalizedLabels"] as! Bool
              let displayName = arguments["displayName"] as! String
@@ -237,7 +237,9 @@ public class SwiftContactsServicePlugin: NSObject, FlutterPlugin, CNContactViewC
         contact.phoneNumbers.append(CNLabeledValue(
             label: "mobile", value: CNPhoneNumber(stringValue: phone)))
         let controller = CNContactViewController.init(forUnknownContact:contact)
+        controller.contactStore = CNContactStore()
         controller.delegate = self
+        controller.allowsActions = false
         DispatchQueue.main.async {
          let navigation = UINavigationController .init(rootViewController: controller)
          let viewController : UIViewController? = UIApplication.shared.delegate?.window??.rootViewController
